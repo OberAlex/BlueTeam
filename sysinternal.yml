@@ -1,0 +1,27 @@
+# Name: Alex Oberkircher
+# Class: CSEC 473
+# Script: Sysinternals
+# Description: 
+---
+- name: Install Sysinternals
+  hosts: windows
+  gather_facts: false
+  tasks:
+    - name: Download Sysinternals Suite
+      win_get_url:
+        url: "https://download.sysinternals.com/files/SysinternalsSuite.zip"
+        dest: 'C:\Temp\SysinternalsSuite.zip'
+      register: download_result
+
+    - name: Extract Sysinternals Suite
+      win_unzip:
+        src: 'C:\Temp\SysinternalsSuite.zip'
+        dest: 'C:\Sysinternals'
+      when: download_result.changed
+
+    - name: Add Sysinternals to PATH
+      win_environment:
+        name: PATH
+        value: '{{ ansible_env.SYSTEMROOT }}\Sysinternals'
+        state: present
+        level: machine
